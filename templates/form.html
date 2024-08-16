@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transport Document Form</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100">
+    <div class="container mx-auto p-8">
+        <h1 class="text-3xl font-semibold mb-6 text-center text-gray-800">Transport Document Receiving Form</h1>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul class="mb-4 text-red-500">
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        <form action="/" method="POST" enctype="multipart/form-data" class="bg-white p-8 rounded-lg shadow-lg max-w-4xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-gray-700 font-medium">Transporter Name</label>
+                    <input type="text" name="transporter_name" class="w-full p-3 border border-gray-300 rounded-lg mt-1" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium">Cheque Prepared For</label>
+                    <input type="text" name="cheque_prepared_for" class="w-full p-3 border border-gray-300 rounded-lg mt-1" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium">Received Date</label>
+                    <input type="date" name="received_date" class="w-full p-3 border border-gray-300 rounded-lg mt-1" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium">Appointment Date</label>
+                    <input type="date" name="appointment_date" class="w-full p-3 border border-gray-300 rounded-lg mt-1" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium">Goods Transported</label>
+                    <input type="text" name="goods_transported" class="w-full p-3 border border-gray-300 rounded-lg mt-1" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium">Phone No</label>
+                    <input type="text" name="phone_no" class="w-full p-3 border border-gray-300 rounded-lg mt-1" required>
+                </div>
+            </div>
+            <hr class="my-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-gray-700 font-medium">ADR/Koti</label>
+                    <input type="file" name="adr_koti" class="w-full p-3 border border-gray-300 rounded-lg mt-1">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium">Gate Pass</label>
+                    <input type="file" name="gate_pass" class="w-full p-3 border border-gray-300 rounded-lg mt-1">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium">We Bill</label>
+                    <input type="file" name="we_bill" class="w-full p-3 border border-gray-300 rounded-lg mt-1">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium">Merchandise Receipt</label>
+                    <input type="file" name="merchandise_receipt" class="w-full p-3 border border-gray-300 rounded-lg mt-1">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium">Livery</label>
+                    <input type="file" name="livery" class="w-full p-3 border border-gray-300 rounded-lg mt-1">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium">ID/Kebele or Passport</label>
+                    <input type="file" name="id_passport" class="w-full p-3 border border-gray-300 rounded-lg mt-1">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium">Representation Letter</label>
+                    <input type="file" name="representation_letter" class="w-full p-3 border border-gray-300 rounded-lg mt-1">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium">DP World</label>
+                    <input type="file" name="dp_world" class="w-full p-3 border border-gray-300 rounded-lg mt-1">
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium">Association Receipt</label>
+                    <input type="file" name="association_receipt" class="w-full p-3 border border-gray-300 rounded-lg mt-1">
+                </div>
+            </div>
+            <div class="flex justify-center mt-8">
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold p-3 rounded-lg w-full md:w-1/2">Submit</button>
+            </div>
+        </form>
+    </div>
+</body>
+
+</html>

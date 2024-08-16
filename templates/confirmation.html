@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submission Confirmation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 text-gray-900">
+    <div class="max-w-5xl mx-auto p-6 bg-white shadow-md rounded-lg mt-10">
+        <h1 class="text-3xl font-bold text-center mb-6">Al-Impex Business PLC</h1>
+        <h2 class="text-2xl font-semibold text-center mb-6">Transport Receiving Form</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Left Column -->
+            <div class="flex flex-col justify-between">
+                <div>
+                    <h3 class="text-xl font-semibold mb-2">Transporter Details</h3>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li><strong class="font-semibold">Transporter Name:</strong> {{ document.transporter_name }}</li>
+                        <li><strong class="font-semibold">Cheque Prepared For:</strong> {{ document.cheque_prepared_for }}</li>
+                        <li><strong class="font-semibold">Received Date:</strong> {{ document.received_date }}</li>
+                        <li><strong class="font-semibold">Appointment Date:</strong> {{ document.appointment_date }}</li>
+                        <li><strong class="font-semibold">Goods Transported:</strong> {{ document.goods_transported }}</li>
+                        <li><strong class="font-semibold">Phone Number:</strong> {{ document.phone_no }}</li>
+                    </ul>
+                </div>
+                <div class="mt-10 pt-4 border-t border-gray-300">
+                    <h3 class="text-lg font-semibold mb-4">To Be Signed By Transporter</h3>
+                    <div class="flex flex-col space-y-4">
+                        <div>
+                            <strong class="font-semibold">Name:</strong>
+                            <span class="border-b border-gray-300 w-full block">________________</span>
+                        </div>
+                        <div>
+                            <strong class="font-semibold">Signature:</strong>
+                            <span class="border-b border-gray-300 w-full block">________________</span>
+                        </div>
+                        <div>
+                            <strong class="font-semibold">Date:</strong>
+                            <span class="border-b border-gray-300 w-full block">________________</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Right Column -->
+            <div class="flex flex-col justify-between">
+                <div>
+                    <h3 class="text-xl font-semibold mb-2">Types of Documents</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <input type="checkbox" id="adr_koti" {{ 'checked' if document.adr_koti and document.adr_koti.strip() else '' }} disabled class="mr-2">
+                            <label for="adr_koti" class="font-semibold">ADR Koti:</label>
+                            {% if document.adr_koti and document.adr_koti.strip() %}
+                                <a href="{{ url_for('uploaded_file', filename=document.adr_koti) }}" class="ml-2 text-blue-500" target="_blank">View PDF</a>
+                            {% else %}
+                                <span class="ml-2 text-gray-500">Not Uploaded</span>
+                            {% endif %}
+                        </li>
+                        <li class="flex items-center">
+                            <input type="checkbox" id="gate_pass" {{ 'checked' if document.gate_pass and document.gate_pass.strip() else '' }} disabled class="mr-2">
+                            <label for="gate_pass" class="font-semibold">Gate Pass:</label>
+                            {% if document.gate_pass and document.gate_pass.strip() %}
+                                <a href="{{ url_for('uploaded_file', filename=document.gate_pass) }}" class="ml-2 text-blue-500" target="_blank">View PDF</a>
+                            {% else %}
+                                <span class="ml-2 text-gray-500">Not Uploaded</span>
+                            {% endif %}
+                        </li>
+                        <li class="flex items-center">
+                            <input type="checkbox" id="we_bill" {{ 'checked' if document.we_bill and document.we_bill.strip() else '' }} disabled class="mr-2">
+                            <label for="we_bill" class="font-semibold">WE Bill:</label>
+                            {% if document.we_bill and document.we_bill.strip() %}
+                                <a href="{{ url_for('uploaded_file', filename=document.we_bill) }}" class="ml-2 text-blue-500" target="_blank">View PDF</a>
+                            {% else %}
+                                <span class="ml-2 text-gray-500">Not Uploaded</span>
+                            {% endif %}
+                        </li>
+                        <li class="flex items-center">
+                            <input type="checkbox" id="merchandise_receipt" {{ 'checked' if document.merchandise_receipt and document.merchandise_receipt.strip() else '' }} disabled class="mr-2">
+                            <label for="merchandise_receipt" class="font-semibold">Merchandise Receipt:</label>
+                            {% if document.merchandise_receipt and document.merchandise_receipt.strip() %}
+                                <a href="{{ url_for('uploaded_file', filename=document.merchandise_receipt) }}" class="ml-2 text-blue-500" target="_blank">View PDF</a>
+                            {% else %}
+                                <span class="ml-2 text-gray-500">Not Uploaded</span>
+                            {% endif %}
+                        </li>
+                        <li class="flex items-center">
+                            <input type="checkbox" id="livery" {{ 'checked' if document.livery and document.livery.strip() else '' }} disabled class="mr-2">
+                            <label for="livery" class="font-semibold">Livery:</label>
+                            {% if document.livery and document.livery.strip() %}
+                                <a href="{{ url_for('uploaded_file', filename=document.livery) }}" class="ml-2 text-blue-500" target="_blank">View PDF</a>
+                            {% else %}
+                                <span class="ml-2 text-gray-500">Not Uploaded</span>
+                            {% endif %}
+                        </li>
+                        <li class="flex items-center">
+                            <input type="checkbox" id="id_passport" {{ 'checked' if document.id_passport and document.id_passport.strip() else '' }} disabled class="mr-2">
+                            <label for="id_passport" class="font-semibold">ID Passport:</label>
+                            {% if document.id_passport and document.id_passport.strip() %}
+                                <a href="{{ url_for('uploaded_file', filename=document.id_passport) }}" class="ml-2 text-blue-500" target="_blank">View PDF</a>
+                            {% else %}
+                                <span class="ml-2 text-gray-500">Not Uploaded</span>
+                            {% endif %}
+                        </li>
+                        <li class="flex items-center">
+                            <input type="checkbox" id="representation_letter" {{ 'checked' if document.representation_letter and document.representation_letter.strip() else '' }} disabled class="mr-2">
+                            <label for="representation_letter" class="font-semibold">Representation Letter:</label>
+                            {% if document.representation_letter and document.representation_letter.strip() %}
+                                <a href="{{ url_for('uploaded_file', filename=document.representation_letter) }}" class="ml-2 text-blue-500" target="_blank">View PDF</a>
+                            {% else %}
+                                <span class="ml-2 text-gray-500">Not Uploaded</span>
+                            {% endif %}
+                        </li>
+                        <li class="flex items-center">
+                            <input type="checkbox" id="dp_world" {{ 'checked' if document.dp_world and document.dp_world.strip() else '' }} disabled class="mr-2">
+                            <label for="dp_world" class="font-semibold">DP World:</label>
+                            {% if document.dp_world and document.dp_world.strip() %}
+                                <a href="{{ url_for('uploaded_file', filename=document.dp_world) }}" class="ml-2 text-blue-500" target="_blank">View PDF</a>
+                            {% else %}
+                                <span class="ml-2 text-gray-500">Not Uploaded</span>
+                            {% endif %}
+                        </li>
+                        <li class="flex items-center">
+                            <input type="checkbox" id="association_receipt" {{ 'checked' if document.association_receipt and document.association_receipt.strip() else '' }} disabled class="mr-2">
+                            <label for="association_receipt" class="font-semibold">Association Receipt:</label>
+                            {% if document.association_receipt and document.association_receipt.strip() %}
+                                <a href="{{ url_for('uploaded_file', filename=document.association_receipt) }}" class="ml-2 text-blue-500" target="_blank">View PDF</a>
+                            {% else %}
+                                <span class="ml-2 text-gray-500">Not Uploaded</span>
+                            {% endif %}
+                        </li>
+                    </ul>
+                </div>
+                <div class="mt-10 pt-4 border-t border-gray-300">
+                    <h3 class="text-lg font-semibold mb-4">To Be Signed By Document </h3>
+                    <div class="flex flex-col space-y-4">
+                        <div>
+                            <strong class="font-semibold">Name:</strong>
+                            <span class="border-b border-gray-300 w-full block">________________</span>
+                        </div>
+                        <div>
+                            <strong class="font-semibold">Signature:</strong>
+                            <span class="border-b border-gray-300 w-full block">________________</span>
+                        </div>
+                        <div>
+                            <strong class="font-semibold">Date:</strong>
+                            <span class="border-b border-gray-300 w-full block">________________</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Print Button -->
+        <div class="text-center mt-10">
+            <button onclick="window.print()" class="px-6 py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600">
+                Print Appointment Paper
+            </button>
+        </div>
+    </div>
+</body>
+
+</html>
