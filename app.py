@@ -14,9 +14,9 @@ app.secret_key = 'supersecretkey'
 
 db.init_app(app)
 
+# Create tables if they don't exist
 with app.app_context():
-    db.drop_all()  # Drops all the tables
-    db.create_all()  # Recreates all the tables
+    db.create_all()
 
 # Ensure the uploads directory exists
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
@@ -53,7 +53,87 @@ def generate_pdf(document):
     buffer.seek(0)
     return buffer, pdf_name
 
-@app.route("/", methods=["GET", "POST"])
+@app.route('/', methods=['GET', 'POST'])
+def claim():
+    if request.method == 'POST':
+        # Extract data from form fields
+        from_location = request.form.get('from_location')
+        to_location = request.form.get('to_location')
+        paid_to = request.form.get('paid_to')
+        plate_no = request.form.get('plate_no')
+        types_of_product = request.form.get('types_of_product')
+        number_of_bags = request.form.get('number_of_bags')
+        quintal = request.form.get('quintal')
+        unit_price = request.form.get('unit_price')
+        total_price = request.form.get('total_price')
+        advance_payment = request.form.get('advance_payment')
+        remaining_payment = request.form.get('remaining_payment')
+        remark = request.form.get('remark')
+        requested_by_name = request.form.get('requested_by_name')
+        requested_by_signature = request.form.get('requested_by_signature')
+        requested_by_date = request.form.get('requested_by_date')
+        approved_by_name = request.form.get('approved_by_name')
+        approved_by_signature = request.form.get('approved_by_signature')
+        approved_by_date = request.form.get('approved_by_date')
+
+        # Debugging: Print the form data to ensure it's being captured
+        print("from_location:", from_location)
+        print("to_location:", to_location)
+        print("paid_to:", paid_to)
+        print("plate_no:", plate_no)
+        print("types_of_product:", types_of_product)
+        print("number_of_bags:", number_of_bags)
+        print("quintal:", quintal)
+        print("unit_price:", unit_price)
+        print("total_price:", total_price)
+        print("advance_payment:", advance_payment)
+        print("remaining_payment:", remaining_payment)
+        print("remark:", remark)
+        print("requested_by_name:", requested_by_name)
+        print("requested_by_signature:", requested_by_signature)
+        print("requested_by_date:", requested_by_date)
+        print("approved_by_name:", approved_by_name)
+        print("approved_by_signature:", approved_by_signature)
+        print("approved_by_date:", approved_by_date)
+
+        # Check for None values and handle them if necessary
+        if None in [from_location, to_location, paid_to, plate_no, types_of_product, number_of_bags, quintal, unit_price, total_price, advance_payment, remaining_payment, remark, requested_by_name, requested_by_signature, requested_by_date, approved_by_name, approved_by_signature, approved_by_date]:
+            flash("Please fill in all required fields.")
+            return redirect(url_for('claim'))
+
+        # Create a new TransportClaim object
+        new_claim = TransportClaim(
+            from_location=from_location,
+            to_location=to_location,
+            paid_to=paid_to,
+            plate_no=plate_no,
+            types_of_product=types_of_product,
+            number_of_bags=number_of_bags,
+            quintal=quintal,
+            unit_price=unit_price,
+            total_price=total_price,
+            advance_payment=advance_payment,
+            remaining_payment=remaining_payment,
+            remark=remark,
+            requested_by_name=requested_by_name,
+            requested_by_signature=requested_by_signature,
+            requested_by_date=requested_by_date,
+            approved_by_name=approved_by_name,
+            approved_by_signature=approved_by_signature,
+            approved_by_date=approved_by_date
+        )
+
+        # Add and commit the new claim to the database
+        db.session.add(new_claim)
+        db.session.commit()
+
+        # Flash a success message and redirect to form.html
+        # flash("Transport claim submitted successfully!")
+        return redirect(url_for('form'))
+
+    return render_template('transport_claim_form.html')
+
+@app.route("/form", methods=["GET", "POST"])
 def form():
     if request.method == "POST":
         transporter_name = request.form["transporter_name"]
@@ -74,9 +154,11 @@ def form():
         libre = save_file(request.files['libre'], prefix=transporter_name) if 'libre' in request.files else None
         id_card = save_file(request.files['id_card'], prefix=transporter_name) if 'id_card' in request.files else None
         delegation_document = save_file(request.files['delegation_document'], prefix=transporter_name) if 'delegation_document' in request.files else None
-        if None in [credit_recipt, transport_agreement, way_bill, weight_scale, container_inspection, container_interchange, grn, libre, id_card,delegation_document]:
+
+        # Ensure all required documents are uploaded
+        if None in [credit_recipt, transport_agreement, way_bill, weight_scale, container_inspection, container_interchange, grn, libre, id_card, delegation_document]:
             flash("Please upload all required documents.")
-            return render_template("form.html")
+            return redirect(url_for('form'))
 
         # Create a new TransportDocument object
         new_document = TransportDocument(
@@ -107,12 +189,8 @@ def form():
 
     return render_template("form.html")
 
-@app.route('/claim')
-def claim():
-    if request.method =='POST':
-        return redirect(url_for('claim'))
-    
-    return render_template('transport_claim_form.html')
+
+
 
 @app.route("/confirmation/<int:document_id>")
 def confirmation(document_id):
