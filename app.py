@@ -64,17 +64,17 @@ def form():
         goods_transported = request.form["goods_transported"]
         phone_no = request.form["phone_no"]
 
-        adr_koti = save_file(request.files['adr_koti'], prefix=transporter_name) if 'adr_koti' in request.files else None
-        gate_pass = save_file(request.files['gate_pass'], prefix=transporter_name) if 'gate_pass' in request.files else None
-        we_bill = save_file(request.files['we_bill'], prefix=transporter_name) if 'we_bill' in request.files else None
-        merchandise_receipt = save_file(request.files['merchandise_receipt'], prefix=transporter_name) if 'merchandise_receipt' in request.files else None
-        livery = save_file(request.files['livery'], prefix=transporter_name) if 'livery' in request.files else None
-        id_passport = save_file(request.files['id_passport'], prefix=transporter_name) if 'id_passport' in request.files else None
-        representation_letter = save_file(request.files['representation_letter'], prefix=transporter_name) if 'representation_letter' in request.files else None
-        dp_world = save_file(request.files['dp_world'], prefix=transporter_name) if 'dp_world' in request.files else None
-        association_receipt = save_file(request.files['association_receipt'], prefix=transporter_name) if 'association_receipt' in request.files else None
-
-        if None in [adr_koti, gate_pass, we_bill, merchandise_receipt, livery, id_passport, representation_letter, dp_world, association_receipt]:
+        credit_recipt = save_file(request.files['credit_recipt'], prefix=transporter_name) if 'credit_recipt' in request.files else None
+        transport_agreement = save_file(request.files['transport_agreement'], prefix=transporter_name) if 'transport_agreement' in request.files else None
+        way_bill = save_file(request.files['way_bill'], prefix=transporter_name) if 'way_bill' in request.files else None
+        weight_scale = save_file(request.files['weight_scale'], prefix=transporter_name) if 'weight_scale' in request.files else None
+        container_inspection = save_file(request.files['container_inspection'], prefix=transporter_name) if 'container_inspection' in request.files else None
+        container_interchange = save_file(request.files['container_interchange'], prefix=transporter_name) if 'container_interchange' in request.files else None
+        grn = save_file(request.files['grn'], prefix=transporter_name) if 'grn' in request.files else None
+        libre = save_file(request.files['libre'], prefix=transporter_name) if 'libre' in request.files else None
+        id_card = save_file(request.files['id_card'], prefix=transporter_name) if 'id_card' in request.files else None
+        delegation_document = save_file(request.files['delegation_document'], prefix=transporter_name) if 'delegation_document' in request.files else None
+        if None in [credit_recipt, transport_agreement, way_bill, weight_scale, container_inspection, container_interchange, grn, libre, id_card,delegation_document]:
             flash("Please upload all required documents.")
             return redirect(url_for('form'))
 
@@ -85,15 +85,16 @@ def form():
             appointment_date=appointment_date,
             goods_transported=goods_transported,
             phone_no=phone_no,
-            adr_koti=adr_koti,
-            gate_pass=gate_pass,
-            we_bill=we_bill,
-            merchandise_receipt=merchandise_receipt,
-            livery=livery,
-            id_passport=id_passport,
-            representation_letter=representation_letter,
-            dp_world=dp_world,
-            association_receipt=association_receipt
+            credit_recipt=credit_recipt,
+            transport_agreement=transport_agreement,
+            way_bill=way_bill,
+            weight_scale=weight_scale,
+            container_inspection=container_inspection,
+            container_interchange=container_interchange,
+            grn=grn,
+            libre=libre,
+            id_card=id_card,
+            delegation_document=delegation_document
         )
 
         db.session.add(new_document)
