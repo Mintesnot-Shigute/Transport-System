@@ -54,7 +54,17 @@ def generate_pdf(document):
     buffer.seek(0)
     return buffer, pdf_name
 
-@app.route("/", methods=["GET", "POST"])
+@app.route('/', methods=['GET', 'POST'])
+def claim():
+    if request.method == 'POST':
+        # Process quiz answers if needed
+        return redirect(url_for('form'))  # Redirect to success page after quiz submission
+
+    return render_template('transport_claim_form.html')
+
+
+
+@app.route("/form", methods=["GET", "POST"])
 def form():
     if request.method == "POST":
         transporter_name = request.form["transporter_name"]
@@ -105,12 +115,7 @@ def form():
 
     return render_template("form.html")
 
-@app.route('/claim')
-def claim():
-    if request.method =='POST':
-        return redirect(url_for('claim'))
-    
-    return render_template('transport_claim_form.html')
+
 
 @app.route("/confirmation/<int:document_id>")
 def confirmation(document_id):
