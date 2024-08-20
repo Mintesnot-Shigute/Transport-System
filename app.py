@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, make_response
-from models import db, TransportDocument
+from models import db, TransportDocument, TransportClaim  # Import TransportClaim model
 from werkzeug.utils import secure_filename
 import os
 from io import BytesIO
@@ -53,14 +53,7 @@ def generate_pdf(document):
     buffer.seek(0)
     return buffer, pdf_name
 
-@app.route('/', methods=['GET', 'POST'])
-def claim():
-    if request.method == 'POST':
-        return redirect(url_for('form'))
-
-    return render_template('transport_claim_form.html')
-
-@app.route("/form", methods=["GET", "POST"])
+@app.route("/", methods=["GET", "POST"])
 def form():
     if request.method == "POST":
         transporter_name = request.form["transporter_name"]
@@ -70,6 +63,7 @@ def form():
         goods_transported = request.form["goods_transported"]
         phone_no = request.form["phone_no"]
 
+        # Handle file uploads
         credit_recipt = save_file(request.files['credit_recipt'], prefix=transporter_name) if 'credit_recipt' in request.files else None
         transport_agreement = save_file(request.files['transport_agreement'], prefix=transporter_name) if 'transport_agreement' in request.files else None
         way_bill = save_file(request.files['way_bill'], prefix=transporter_name) if 'way_bill' in request.files else None
@@ -80,11 +74,11 @@ def form():
         libre = save_file(request.files['libre'], prefix=transporter_name) if 'libre' in request.files else None
         id_card = save_file(request.files['id_card'], prefix=transporter_name) if 'id_card' in request.files else None
         delegation_document = save_file(request.files['delegation_document'], prefix=transporter_name) if 'delegation_document' in request.files else None
-
-        if None in [credit_recipt, transport_agreement, way_bill, weight_scale, container_inspection, container_interchange, grn, libre, id_card, delegation_document]:
+        if None in [credit_recipt, transport_agreement, way_bill, weight_scale, container_inspection, container_interchange, grn, libre, id_card,delegation_document]:
             flash("Please upload all required documents.")
             return render_template("form.html")
 
+        # Create a new TransportDocument object
         new_document = TransportDocument(
             transporter_name=transporter_name,
             cheque_prepared_for=cheque_prepared_for,
@@ -104,13 +98,21 @@ def form():
             delegation_document=delegation_document
         )
 
+        # Add and commit the new document to the database
         db.session.add(new_document)
         db.session.commit()
 
-        flash("All documents uploaded successfully! Appointment date form generated.")
+        flash("All documents uploaded successfully!")
         return redirect(url_for('confirmation', document_id=new_document.id))
 
     return render_template("form.html")
+
+@app.route('/claim')
+def claim():
+    if request.method =='POST':
+        return redirect(url_for('claim'))
+    
+    return render_template('transport_claim_form.html')
 
 @app.route("/confirmation/<int:document_id>")
 def confirmation(document_id):
