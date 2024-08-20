@@ -14,9 +14,9 @@ app.secret_key = 'supersecretkey'
 
 db.init_app(app)
 
-# Create tables if they don't exist
 with app.app_context():
-    db.create_all()
+    db.drop_all()  # Drops all the tables
+    db.create_all()  # Recreates all the tables
 
 # Ensure the uploads directory exists
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
@@ -25,7 +25,6 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 def save_file(file, prefix=None):
     filename = secure_filename(file.filename)
     if prefix:
-        # Extract file extension
         name, ext = os.path.splitext(filename)
         filename = f"{prefix}_{name}{ext}"
     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
@@ -57,12 +56,9 @@ def generate_pdf(document):
 @app.route('/', methods=['GET', 'POST'])
 def claim():
     if request.method == 'POST':
-        # Process quiz answers if needed
-        return redirect(url_for('form'))  # Redirect to success page after quiz submission
+        return redirect(url_for('form'))
 
     return render_template('transport_claim_form.html')
-
-
 
 @app.route("/form", methods=["GET", "POST"])
 def form():
@@ -84,9 +80,10 @@ def form():
         libre = save_file(request.files['libre'], prefix=transporter_name) if 'libre' in request.files else None
         id_card = save_file(request.files['id_card'], prefix=transporter_name) if 'id_card' in request.files else None
         delegation_document = save_file(request.files['delegation_document'], prefix=transporter_name) if 'delegation_document' in request.files else None
-        if None in [credit_recipt, transport_agreement, way_bill, weight_scale, container_inspection, container_interchange, grn, libre, id_card,delegation_document]:
+
+        if None in [credit_recipt, transport_agreement, way_bill, weight_scale, container_inspection, container_interchange, grn, libre, id_card, delegation_document]:
             flash("Please upload all required documents.")
-            return redirect(url_for('form'))
+            return render_template("form.html")
 
         new_document = TransportDocument(
             transporter_name=transporter_name,
@@ -114,8 +111,6 @@ def form():
         return redirect(url_for('confirmation', document_id=new_document.id))
 
     return render_template("form.html")
-
-
 
 @app.route("/confirmation/<int:document_id>")
 def confirmation(document_id):

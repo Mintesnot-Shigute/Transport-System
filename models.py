@@ -11,7 +11,6 @@ app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
 # Initialize SQLAlchemy
 db = SQLAlchemy(app)
-
 # Define the TransportDocument model
 class TransportDocument(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -25,9 +24,9 @@ class TransportDocument(db.Model):
     transport_agreement = db.Column(db.String(200))
     way_bill = db.Column(db.String(200))
     weight_scale = db.Column(db.String(200))
-    container_inspection= db.Column(db.String(200))
+    container_inspection = db.Column(db.String(200))
     container_interchange = db.Column(db.String(200))
-    grn= db.Column(db.String(200))
+    grn = db.Column(db.String(200))
     libre = db.Column(db.String(200))
     id_card = db.Column(db.String(200))
     delegation_document = db.Column(db.String(200))
