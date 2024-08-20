@@ -105,6 +105,13 @@ def form():
 
     return render_template("form.html")
 
+@app.route('/claim')
+def claim():
+    if request.method =='POST':
+        return redirect(url_for('claim'))
+    
+    return render_template('transport_claim_form.html')
+
 @app.route("/confirmation/<int:document_id>")
 def confirmation(document_id):
     document = TransportDocument.query.get_or_404(document_id)
