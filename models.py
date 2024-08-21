@@ -34,28 +34,29 @@ class TransportDocument(db.Model):
 
 # Define the TransportClaim model
 class TransportClaim(db.Model):
-    __tablename__ = 'transport_claim'  # Explicitly define the table name
+    __tablename__ = 'transport_claimss' 
     id = db.Column(db.Integer, primary_key=True)
     from_location = db.Column(db.String(100), nullable=False)
     to_location = db.Column(db.String(100), nullable=False)
     paid_to = db.Column(db.String(100), nullable=False)
-    plate_no = db.Column(db.String(100), nullable=False)
+    plate_no = db.Column(db.String(50), nullable=False)
     types_of_product = db.Column(db.String(100), nullable=False)
-    number_of_bags = db.Column(db.String(100), nullable=False)
-    quintal = db.Column(db.String(100), nullable=False)
-    unit_price = db.Column(db.String(100), nullable=False)
-    total_price = db.Column(db.String(100), nullable=False)
-    advance_payment = db.Column(db.String(100), nullable=False)
-    remaining_payment = db.Column(db.String(100), nullable=False)
-    remark = db.Column(db.Text)
+    number_of_bags = db.Column(db.Integer, nullable=False)
+    quintal = db.Column(db.Float, nullable=False)
+    unit_price = db.Column(db.Float, nullable=False)
+    total_price = db.Column(db.Float, nullable=False)
+    advance_payment = db.Column(db.Float, nullable=False)
+    remaining_payment = db.Column(db.Float, nullable=False)
+    remark = db.Column(db.String(200), nullable=True)
     requested_by_name = db.Column(db.String(100), nullable=False)
     requested_by_signature = db.Column(db.String(100), nullable=False)
-    requested_by_date = db.Column(db.String(100), nullable=False)
+    requested_by_date = db.Column(db.String(50), nullable=False)
     approved_by_name = db.Column(db.String(100), nullable=False)
     approved_by_signature = db.Column(db.String(100), nullable=False)
-    approved_by_date = db.Column(db.String(100), nullable=False)
+    approved_by_date = db.Column(db.String(50), nullable=False)
+    can_be_rented = db.Column(db.String(3), nullable=True)  # New column # Values will be "Yes" or "No"
 
-# Create the tables in the database
+# Create the tables in the database 
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()

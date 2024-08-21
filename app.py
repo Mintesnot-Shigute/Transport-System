@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, make_response
 from models import db, TransportDocument, TransportClaim  # Import TransportClaim model
+from flask_migrate import Migrate  # Import Flask-Migrate
 from werkzeug.utils import secure_filename
 import os
 from io import BytesIO
@@ -14,6 +15,9 @@ app.secret_key = 'supersecretkey'
 
 db.init_app(app)
 
+# Initialize Flask-Migrate
+migrate = Migrate(app, db)
+
 # Create tables if they don't exist
 with app.app_context():
     db.create_all()
@@ -21,6 +25,9 @@ with app.app_context():
 # Ensure the uploads directory exists
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
+
+# ... rest of your code ...
+
 
 def save_file(file, prefix=None):
     filename = secure_filename(file.filename)
@@ -75,6 +82,8 @@ def claim():
         approved_by_name = request.form.get('approved_by_name')
         approved_by_signature = request.form.get('approved_by_signature')
         approved_by_date = request.form.get('approved_by_date')
+        can_be_rented = request.form.get('can_be_rented')  # Added field
+
 
         # Debugging: Print the form data to ensure it's being captured
         print("from_location:", from_location)
@@ -95,6 +104,7 @@ def claim():
         print("approved_by_name:", approved_by_name)
         print("approved_by_signature:", approved_by_signature)
         print("approved_by_date:", approved_by_date)
+        print("can_be_rented:", can_be_rented)  # Added field
 
         # Check for None values and handle them if necessary
         if None in [from_location, to_location, paid_to, plate_no, types_of_product, number_of_bags, quintal, unit_price, total_price, advance_payment, remaining_payment, remark, requested_by_name, requested_by_signature, requested_by_date, approved_by_name, approved_by_signature, approved_by_date]:
@@ -120,7 +130,8 @@ def claim():
             requested_by_date=requested_by_date,
             approved_by_name=approved_by_name,
             approved_by_signature=approved_by_signature,
-            approved_by_date=approved_by_date
+            approved_by_date=approved_by_date,
+            can_be_rented=can_be_rented  # Added field
         )
 
         # Add and commit the new claim to the database
@@ -214,3 +225,5 @@ def uploaded_file(filename):
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+
