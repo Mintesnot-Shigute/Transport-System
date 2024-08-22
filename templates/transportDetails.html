@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transport Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 text-gray-900">
+    <div class="max-w-7xl mx-auto p-6 bg-white shadow-md rounded-lg mt-10">
+        <h1 class="text-3xl font-bold text-center mb-6">Transporter List</h1>
+        <table class="min-w-full bg-white border border-gray-300">
+            <thead>
+                <tr class="w-full bg-gray-200 text-gray-700">
+                    <th class="py-3 px-4 text-left">No</th> <!-- Row Number Header -->
+                    <th class="py-3 px-4 text-left">Transporter Name</th>
+                    <th class="py-3 px-4 text-left">Received Date</th>
+                    <th class="py-3 px-4 text-left">Appointment Date</th>
+                </tr>
+            </thead>
+            
+            <tbody>
+                {% for document in documents %}
+                <tr class="border-t border-gray-300">
+                    <td class="py-3 px-4">{{ loop.index }}</td> <!-- Row Number -->
+                    <td class="py-3 px-4">{{ document.transporter_name }}</td>
+                    <td class="py-3 px-4">{{ document.received_date }}</td>
+                    <td class="py-3 px-4">{{ document.appointment_date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            
+        </table>
+    </div>
+</body>
+
+</html>
