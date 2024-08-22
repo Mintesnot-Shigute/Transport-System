@@ -1,10 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, make_response, session
 from models import db, TransportDocument, TransportClaim  # Import TransportClaim model
+from flask_migrate import Migrate  # Import Flask-Migrate
 from werkzeug.utils import secure_filename
 import os
 from io import BytesIO
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+import logging
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///transport.db'
@@ -14,6 +16,9 @@ app.secret_key = 'supersecretkey'
 
 db.init_app(app)
 
+# Initialize Flask-Migrate
+migrate = Migrate(app, db)
+
 # Create tables if they don't exist
 with app.app_context():
     db.create_all()
@@ -21,6 +26,9 @@ with app.app_context():
 # Ensure the uploads directory exists
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
+
+# ... rest of your code ...
+
 
 def save_file(file, prefix=None):
     filename = secure_filename(file.filename)
@@ -103,13 +111,42 @@ def claim():
         approved_by_name = request.form.get('approved_by_name')
         approved_by_signature = request.form.get('approved_by_signature')
         approved_by_date = request.form.get('approved_by_date')
+        can_be_rented = request.form.get('can_be_rented')  # Added field
 
+
+
+        # Debugging: Print the form data to ensure it's being captured
+        app.logger.info(f"from_location: {from_location}")
+        app.logger.info(f"to_location: {to_location}")
+        app.logger.info(f"paid_to: {paid_to}")
+        app.logger.info(f"plate_no: {plate_no}")
+        app.logger.info(f"types_of_product: {types_of_product}")
+        app.logger.info(f"number_of_bags: {number_of_bags}")
+        app.logger.info(f"quintal: {quintal}")
+        app.logger.info(f"unit_price: {unit_price}")
+        app.logger.info(f"total_price: {total_price}")
+        app.logger.info(f"advance_payment: {advance_payment}")
+        app.logger.info(f"remaining_payment: {remaining_payment}")
+        app.logger.info(f"remark: {remark}")
+        app.logger.info(f"requested_by_name: {requested_by_name}")
+        app.logger.info(f"requested_by_signature: {requested_by_signature}")
+        app.logger.info(f"requested_by_date: {requested_by_date}")
+        app.logger.info(f"approved_by_name: {approved_by_name}")
+        app.logger.info(f"approved_by_signature: {approved_by_signature}")
+        app.logger.info(f"approved_by_date: {approved_by_date}")
+        app.logger.info(f"can_be_rented: {can_be_rented}")  # Added field
 
 
         # Check for None values and handle them if necessary
         if None in [from_location, to_location, paid_to, plate_no, types_of_product, number_of_bags, quintal, unit_price, total_price, advance_payment, remaining_payment, remark, requested_by_name, requested_by_signature, requested_by_date, approved_by_name, approved_by_signature, approved_by_date]:
             flash("Please fill in all required fields.")
             return redirect(url_for('claim'))
+        
+        if request.method == 'POST':
+    # Extract data from form fields
+            can_be_rented = request.form.get('rented')
+            print(f"Radio button value: {can_be_rented}")  # Debugging step    
+
 
         # Create a new TransportClaim object
         new_claim = TransportClaim(
@@ -130,7 +167,8 @@ def claim():
             requested_by_date=requested_by_date,
             approved_by_name=approved_by_name,
             approved_by_signature=approved_by_signature,
-            approved_by_date=approved_by_date
+            approved_by_date=approved_by_date,
+            can_be_rented=can_be_rented  # Added field
         )
 
         # Add and commit the new claim to the database

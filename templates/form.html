@@ -67,11 +67,11 @@
                 </div>
                 <div>
                     <label class="block text-gray-700 font-medium">Container Inspection</label>
-                    <input type="file" name="container_inspection" class="w-full p-3 border border-gray-300 rounded-lg mt-1">
+                    <input type="file" name="container_inspection"  class="w-full p-3 border border-gray-300 rounded-lg mt-1">
                 </div>
                 <div>
                     <label class="block text-gray-700 font-medium">Container Interchange</label>
-                    <input type="file" name="container_interchange" class="w-full p-3 border border-gray-300 rounded-lg mt-1">
+                    <input type="file" name="container_interchange" id="container_interchange" class="w-full p-3 border border-gray-300 rounded-lg mt-1">
                 </div>
                 <div>
                     <label class="block text-gray-700 font-medium">GRN</label>
@@ -95,26 +95,6 @@
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold p-3 rounded-lg w-full md:w-1/2">Submit</button>
             </div>
         </form>
-
-        <script>
-            // Set default appointment date to 30 days after the received date
-            const receivedDateInput = document.querySelector('input[name="received_date"]');
-            const appointmentDateInput = document.querySelector('input[name="appointment_date"]');
-    
-            receivedDateInput.addEventListener('change', function() {
-                const receivedDate = new Date(this.value);
-                const appointmentDate = new Date(receivedDate);
-                appointmentDate.setDate(appointmentDate.getDate() + 30);
-                appointmentDateInput.value = appointmentDate.toISOString().split('T')[0];
-            });
-    
-            // Initialize the appointment date based on the current received date value (if available)
-            if (receivedDateInput.value) {
-                const event = new Event('change');
-                receivedDateInput.dispatchEvent(event);
-            }
-        </script>
-        
 </body>
 
 </html>
