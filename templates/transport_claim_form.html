@@ -43,13 +43,13 @@
             <div class="mb-4">
                 <label class="block text-sm font-medium text-gray-700 mb-2">Can be Rented</label>
                 
-                <div class="flex items-center">
-                    <input type="radio" id="yes" name="rented" value="yes" class="text-blue-600 focus:ring-blue-500 h-4 w-4">
+                <div class="flex items-center"> 
+                    <input type="radio" id="rentedYes" name="rented" value="yes" class="text-blue-600 focus:ring-blue-500 h-4 w-4">
                     <label for="yes" class="ml-2 block text-sm text-gray-900">Yes</label>
                 </div>
                 
                 <div class="flex items-center mt-2">
-                    <input type="radio" id="no" name="rented" value="no" class="text-blue-600 focus:ring-blue-500 h-4 w-4">
+                    <input type="radio" id="rentedNo" name="rented" value="no" class="text-blue-600 focus:ring-blue-500 h-4 w-4">
                     <label for="no" class="ml-2 block text-sm text-gray-900">No</label>
                 </div>
             </div>
@@ -112,5 +112,21 @@
             </div>
         </form>
     </div>
+
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          document.querySelectorAll('input[name="rented"]').forEach(function (radio) {
+            radio.addEventListener('change', function () {
+              if (this.checked) {
+                localStorage.setItem('can_be_rented', this.value);
+              }
+            });
+          });
+        });
+      </script>
+      
+
 </body>
 </html>

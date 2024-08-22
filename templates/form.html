@@ -67,11 +67,11 @@
                 </div>
                 <div>
                     <label class="block text-gray-700 font-medium">Container Inspection</label>
-                    <input type="file" name="container_inspection" class="w-full p-3 border border-gray-300 rounded-lg mt-1">
+                    <input type="file" name="container_inspection"  class="w-full p-3 border border-gray-300 rounded-lg mt-1">
                 </div>
                 <div>
                     <label class="block text-gray-700 font-medium">Container Interchange</label>
-                    <input type="file" name="container_interchange" class="w-full p-3 border border-gray-300 rounded-lg mt-1">
+                    <input type="file" name="container_interchange" id="container_interchange" class="w-full p-3 border border-gray-300 rounded-lg mt-1">
                 </div>
                 <div>
                     <label class="block text-gray-700 font-medium">GRN</label>
@@ -94,6 +94,22 @@
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold p-3 rounded-lg w-full md:w-1/2">Submit</button>
             </div>
         </form>
+
+
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+              const containerInterchangeField = document.getElementById('container_interchange');
+              const canBeRented = localStorage.getItem('can_be_rented');
+          
+              if (canBeRented === 'yes') {
+                containerInterchangeField.disabled = true;
+                containerInterchangeField.style.backgroundColor = '#d3d3d3';
+              }
+            });
+          </script>
+          
+
 </body>
 
 </html>

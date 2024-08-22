@@ -6,6 +6,7 @@ import os
 from io import BytesIO
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+import logging
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///transport.db'
@@ -86,30 +87,36 @@ def claim():
 
 
         # Debugging: Print the form data to ensure it's being captured
-        print("from_location:", from_location)
-        print("to_location:", to_location)
-        print("paid_to:", paid_to)
-        print("plate_no:", plate_no)
-        print("types_of_product:", types_of_product)
-        print("number_of_bags:", number_of_bags)
-        print("quintal:", quintal)
-        print("unit_price:", unit_price)
-        print("total_price:", total_price)
-        print("advance_payment:", advance_payment)
-        print("remaining_payment:", remaining_payment)
-        print("remark:", remark)
-        print("requested_by_name:", requested_by_name)
-        print("requested_by_signature:", requested_by_signature)
-        print("requested_by_date:", requested_by_date)
-        print("approved_by_name:", approved_by_name)
-        print("approved_by_signature:", approved_by_signature)
-        print("approved_by_date:", approved_by_date)
-        print("can_be_rented:", can_be_rented)  # Added field
+        app.logger.info(f"from_location: {from_location}")
+        app.logger.info(f"to_location: {to_location}")
+        app.logger.info(f"paid_to: {paid_to}")
+        app.logger.info(f"plate_no: {plate_no}")
+        app.logger.info(f"types_of_product: {types_of_product}")
+        app.logger.info(f"number_of_bags: {number_of_bags}")
+        app.logger.info(f"quintal: {quintal}")
+        app.logger.info(f"unit_price: {unit_price}")
+        app.logger.info(f"total_price: {total_price}")
+        app.logger.info(f"advance_payment: {advance_payment}")
+        app.logger.info(f"remaining_payment: {remaining_payment}")
+        app.logger.info(f"remark: {remark}")
+        app.logger.info(f"requested_by_name: {requested_by_name}")
+        app.logger.info(f"requested_by_signature: {requested_by_signature}")
+        app.logger.info(f"requested_by_date: {requested_by_date}")
+        app.logger.info(f"approved_by_name: {approved_by_name}")
+        app.logger.info(f"approved_by_signature: {approved_by_signature}")
+        app.logger.info(f"approved_by_date: {approved_by_date}")
+        app.logger.info(f"can_be_rented: {can_be_rented}")  # Added field
 
         # Check for None values and handle them if necessary
         if None in [from_location, to_location, paid_to, plate_no, types_of_product, number_of_bags, quintal, unit_price, total_price, advance_payment, remaining_payment, remark, requested_by_name, requested_by_signature, requested_by_date, approved_by_name, approved_by_signature, approved_by_date]:
             flash("Please fill in all required fields.")
             return redirect(url_for('claim'))
+        
+        if request.method == 'POST':
+    # Extract data from form fields
+            can_be_rented = request.form.get('rented')
+            print(f"Radio button value: {can_be_rented}")  # Debugging step    
+
 
         # Create a new TransportClaim object
         new_claim = TransportClaim(
@@ -225,5 +232,3 @@ def uploaded_file(filename):
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
