@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, make_response, session
+from flask import Flask, render_template, request, redirect, url_for, flash, send_from_directory, make_response
 from models import db, TransportDocument, TransportClaim  # Import TransportClaim model
 from flask_migrate import Migrate  # Import Flask-Migrate
 from werkzeug.utils import secure_filename
@@ -63,35 +63,7 @@ def generate_pdf(document):
     buffer.seek(0)
     return buffer, pdf_name
 
-
 @app.route('/', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
-        # Placeholder for real authentication
-        if username == 'admin' and password == '12345':
-            session['logged_in'] = True
-            return redirect(url_for('driver_list'))
-        elif username == 'user' and password == '1234':
-            session['logged_in'] = True
-            return redirect(url_for('claim'))
-        else:
-            flash('Invalid credentials')
-            return redirect(url_for('login'))
-    return render_template('login.html')
-
-
-@app.route('/driver-list')
-def driver_list():
-    if not session.get('logged_in'):
-        return redirect(url_for('login'))
-
-    documents = TransportDocument.query.all()
-    return render_template('transportDetails.html', documents=documents)
-
-
-@app.route('/claim', methods=['GET', 'POST'])
 def claim():
     if request.method == 'POST':
         # Extract data from form fields
@@ -116,7 +88,6 @@ def claim():
         can_be_rented = request.form.get('can_be_rented')  # Added field
 
 
-
         # Debugging: Print the form data to ensure it's being captured
         app.logger.info(f"from_location: {from_location}")
         app.logger.info(f"to_location: {to_location}")
@@ -137,7 +108,6 @@ def claim():
         app.logger.info(f"approved_by_signature: {approved_by_signature}")
         app.logger.info(f"approved_by_date: {approved_by_date}")
         app.logger.info(f"can_be_rented: {can_be_rented}")  # Added field
-
 
         # Check for None values and handle them if necessary
         if None in [from_location, to_location, paid_to, plate_no, types_of_product, number_of_bags, quintal, unit_price, total_price, advance_payment, remaining_payment, remark, requested_by_name, requested_by_signature, requested_by_date, approved_by_name, approved_by_signature, approved_by_date]:
@@ -176,7 +146,7 @@ def claim():
         # Add and commit the new claim to the database
         db.session.add(new_claim)
         db.session.commit()
-        session['paid_to'] = request.form.get('paid_to')
+
         # Flash a success message and redirect to form.html
         # flash("Transport claim submitted successfully!")
         return redirect(url_for('form'))
