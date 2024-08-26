@@ -1,42 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-
-<body class="bg-gradient-to-r from-green-600 to-purple-900 flex items-center justify-center h-screen">
-    <div class="absolute top-10 left-0 right-0 text-center text-white">
-        <h1 class="text-4xl font-extrabold tracking-wider">Alimpex Business Plc</h1>
-        <h2 class="text-2xl mt-2 font-semibold tracking-wide">Logistics Division</h2>
-        <h3 class="text-lg mt-1 font-medium">Transport Claim and Appointment System</h3>
-    </div>
-
-    <div class="w-full max-w-md bg-white rounded-xl shadow-lg p-8">
-        <form action="{{ url_for('login') }}" method="POST">
-            <div class="mb-6">
-                <label class="block text-gray-800 text-lg font-semibold mb-2" for="username">
-                    Username
-                </label>
-                <input class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-800 leading-tight focus:outline-none focus:shadow-outline" id="username" type="text" name="username" required>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="max-w-md w-full bg-white p-8 border border-gray-300 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold mb-4">Login</h1>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-4">
+                    {% for category, message in messages %}
+                        <div class="bg-red-200 text-red-700 p-2 rounded">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        <form method="POST" action="/">
+            <div class="mb-4">
+                <label for="username_field" class="block text-sm font-medium text-gray-700">Username</label>
+                <input type="text" id="username_field" name="username_field" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2">
             </div>
-            <div class="mb-8">
-                <label class="block text-gray-800 text-lg font-semibold mb-2" for="password">
-                    Password
-                </label>
-                <input class="shadow appearance-none border rounded-lg w-full py-3 px-4 text-gray-800 leading-tight focus:outline-none focus:shadow-outline" id="password" type="password" name="password" required>
+            <div class="mb-4">
+                <label for="password_field" class="block text-sm font-medium text-gray-700">Password</label>
+                <input type="password" id="password_field" name="password_field" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2">
             </div>
-            <div class="flex justify-center items-center ">
-                <button class="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3 px-6 rounded-lg focus:outline-none focus:shadow-outline transition ease-in-out duration-200">
-                    Login
-                </button>
+            <div class="mb-4">
+                <label for="role" class="block text-sm font-medium text-gray-700">Role</label>
+                <select id="role" name="role" required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2">
+                    <option value="admin">Admin</option>
+                    <option value="user">User</option>
+                </select>
             </div>
-            
+            <div>
+                <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">Login</button>
+            </div>
         </form>
     </div>
 </body>
-
 </html>

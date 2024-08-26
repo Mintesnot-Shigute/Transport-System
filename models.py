@@ -56,6 +56,12 @@ class TransportClaim(db.Model):
     approved_by_date = db.Column(db.String(50), nullable=False)
     can_be_rented = db.Column(db.String(3), nullable=True)  # New column # Values will be "Yes" or "No"
 
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password = db.Column(db.String(120), nullable=False)
+    role = db.Column(db.String(50), nullable=False)  # Add this line
+
 # Create the tables in the database 
 if __name__ == "__main__":
     with app.app_context():

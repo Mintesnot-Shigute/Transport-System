@@ -108,7 +108,24 @@
               }
             });
           </script>
-          
+          <script>
+            // Set default appointment date to 30 days after the received date
+            const receivedDateInput = document.querySelector('input[name="received_date"]');
+            const appointmentDateInput = document.querySelector('input[name="appointment_date"]');
+    
+            receivedDateInput.addEventListener('change', function() {
+                const receivedDate = new Date(this.value);
+                const appointmentDate = new Date(receivedDate);
+                appointmentDate.setDate(appointmentDate.getDate() + 30);
+                appointmentDateInput.value = appointmentDate.toISOString().split('T')[0];
+            });
+    
+            // Initialize the appointment date based on the current received date value (if available)
+            if (receivedDateInput.value) {
+                const event = new Event('change');
+                receivedDateInput.dispatchEvent(event);
+            }
+        </script>
 
 </body>
 
