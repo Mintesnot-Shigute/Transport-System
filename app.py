@@ -103,7 +103,9 @@ def login():
 @role_required('admin')
 def driver_list():
     documents = TransportDocument.query.all()
-    return render_template('transportDetails.html', documents=documents)
+    claims = TransportClaim.query.all()
+    
+    return render_template('transportDetails.html', documents=documents, claims=claims)
 
 @app.route('/claim', methods=['GET', 'POST'])
 @role_required('user')
@@ -111,7 +113,7 @@ def claim():
     if request.method == 'POST':
         # Debugging: Print form data
         print("Form data:", request.form)
-
+        
         # Extract data from form fields
         from_location = request.form.get('from_location')
         to_location = request.form.get('to_location')
@@ -187,8 +189,8 @@ def claim():
         print("New claim added and committed to database.")
 
         return redirect(url_for('form'))
-
-    return render_template('transport_claim_form.html')
+    claims = TransportClaim.query.all()
+    return render_template('transport_claim_form.html', claims=claims)
 
 
 # Route for transporter form
@@ -260,6 +262,8 @@ def form():
 
         flash("All documents uploaded successfully!")
         return redirect(url_for('confirmation', document_id=new_document.id))
+
+
 
     return render_template("form.html")
 

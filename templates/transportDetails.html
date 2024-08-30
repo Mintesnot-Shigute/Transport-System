@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transport Page</title>
+    <title>Transporter List</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -14,26 +14,70 @@
         <table class="min-w-full bg-white border border-gray-300">
             <thead>
                 <tr class="w-full bg-gray-200 text-gray-700">
-                    <th class="py-3 px-4 text-left">No</th> <!-- Row Number Header -->
+                    <th class="py-3 px-4 text-left">No</th>
                     <th class="py-3 px-4 text-left">Transporter Name</th>
                     <th class="py-3 px-4 text-left">Received Date</th>
                     <th class="py-3 px-4 text-left">Appointment Date</th>
+                    <th class="py-3 px-4 text-left">Status</th>
+                    <th class="py-3 px-4 text-left">Actions</th>
                 </tr>
             </thead>
-            
             <tbody>
                 {% for document in documents %}
                 <tr class="border-t border-gray-300">
-                    <td class="py-3 px-4">{{ loop.index }}</td> <!-- Row Number -->
+                    <td class="py-3 px-4">{{ loop.index }}</td>
                     <td class="py-3 px-4">{{ document.transporter_name }}</td>
                     <td class="py-3 px-4">{{ document.received_date }}</td>
                     <td class="py-3 px-4">{{ document.appointment_date }}</td>
+                    <td class="py-3 px-4">
+                        {% if document.status == 'Paid' %}
+                        <span class="bg-green-100 text-green-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">Paid</span>
+                        {% elif document.status == 'Draft' %}
+                        <span class="bg-gray-100 text-gray-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">Draft</span>
+                        {% elif document.status == 'In Payment' %}
+                        <span class="bg-yellow-100 text-yellow-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">In Payment</span>
+                        {% endif %}
+                    </td>
+                    <td class="py-3 px-4">
+                        <button class="bg-blue-500 text-white font-medium py-1 px-2 rounded-md shadow hover:bg-blue-600"
+                            onclick="toggleDetails('details{{ loop.index }}')">Show More</button>
+                    </td>
+                </tr>
+
+                <tr id="details{{ loop.index }}" class="border-t border-gray-300 hidden">
+                    <td colspan="6" class="py-3 px-4">
+                        {% set claims_found = False %}
+                        <div class="bg-gray-100 p-4 rounded-md">
+                            {% for claim in claims %}
+                                {% if claim.document_id == document.id %}
+                                    {% set claims_found = True %}
+                                    <p><strong>Number of bags:</strong> {{ claim.number_of_bags or 'N/A' }}</p>
+                                    <p><strong>Total Price:</strong> {{ claim.total_price }}</p>
+                                    <p><strong>Advance Payment:</strong> {{ claim.advance_payment }}</p>
+                                    <p><strong>Remaining Payment:</strong> {{ claim.remaining_payment }}</p>
+                                {% endif %}
+                            {% endfor %}
+                            {% if not claims_found %}
+                                <p>No associated claim found.</p>
+                            {% endif %}
+                        </div>
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
-            
         </table>
     </div>
+
+    <script>
+        function toggleDetails(rowId) {
+            const detailsRow = document.getElementById(rowId);
+            if (detailsRow.classList.contains('hidden')) {
+                detailsRow.classList.remove('hidden');
+            } else {
+                detailsRow.classList.add('hidden');
+            }
+        }
+    </script>
 </body>
 
 </html>
