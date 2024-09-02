@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-# Initialize Flask app
 app = Flask(__name__)
 
 # Configure the SQLite database
@@ -11,9 +10,12 @@ app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
 # Initialize SQLAlchemy
 db = SQLAlchemy(app)
-# Define the TransportDocument model
-class TransportDocument(db.Model):
-    __tablename__ = 'transport_documents'  # Ensure this matches the actual table name
+
+# Define the TransportRecord model
+class TransportRecord(db.Model):
+    __tablename__ = 'transport_records'
+    
+    # Fields from TransportDocument
     id = db.Column(db.Integer, primary_key=True)
     transporter_name = db.Column(db.String(100), nullable=False)
     cheque_prepared_for = db.Column(db.String(100), nullable=False)
@@ -32,10 +34,7 @@ class TransportDocument(db.Model):
     id_card = db.Column(db.String(200))
     delegation_document = db.Column(db.String(200))
 
-# Define the TransportClaim model
-class TransportClaim(db.Model):
-    __tablename__ = 'transport_claimss' 
-    id = db.Column(db.Integer, primary_key=True)
+    # Fields from TransportClaim
     from_location = db.Column(db.String(100), nullable=False)
     to_location = db.Column(db.String(100), nullable=False)
     paid_to = db.Column(db.String(100), nullable=False)
@@ -49,20 +48,24 @@ class TransportClaim(db.Model):
     remaining_payment = db.Column(db.Float, nullable=False)
     remark = db.Column(db.String(200), nullable=True)
     requested_by_name = db.Column(db.String(100), nullable=False)
-    requested_by_signature = db.Column(db.String(100), nullable=False)
     requested_by_date = db.Column(db.String(50), nullable=False)
     approved_by_name = db.Column(db.String(100), nullable=False)
-    approved_by_signature = db.Column(db.String(100), nullable=False)
     approved_by_date = db.Column(db.String(50), nullable=False)
-    can_be_rented = db.Column(db.String(3), nullable=True)  # New column # Values will be "Yes" or "No"
+    can_be_rented = db.Column(db.String(3), nullable=True)  # Values will be "Yes" or "No"
 
+    # Fields from Approval
+    manager_name = db.Column(db.String(100), nullable=True)
+    approved = db.Column(db.Boolean, default=True)
+    approval_date = db.Column(db.DateTime)
+
+# Define the User model
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(120), nullable=False)
-    role = db.Column(db.String(50), nullable=False)  # Add this line
+    role = db.Column(db.String(50), nullable=False)
 
-# Create the tables in the database 
+# Create the tables in the database
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()

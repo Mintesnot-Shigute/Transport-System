@@ -1,16 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transport Document Form</title>
+    <title>Transport Document and Claim Form</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-
 <body class="bg-gray-100">
     <div class="container mx-auto p-8">
-        <h1 class="text-3xl font-semibold mb-6 text-center text-gray-800">Transport Document Receiving Form</h1>
+        <h1 class="text-3xl font-semibold mb-6 text-center text-gray-800">Transport Document and Claim Form</h1>
+        
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         <ul class="mb-4 text-red-500">
@@ -20,8 +19,107 @@
         </ul>
         {% endif %}
         {% endwith %}
+        
         <form action="/form" method="POST" enctype="multipart/form-data" class="bg-white p-8 rounded-lg shadow-lg max-w-4xl mx-auto">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Transport Document Fields -->
+            <!-- Transport Claim Fields -->
+            <h2 class="text-xl font-semibold mb-4">Transport Claim Details</h2>
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-gray-700 font-medium">From:</label>
+                    <input type="text" name="from_location" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 font-medium">To:</label>
+                    <input type="text" name="to_location" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium">Paid To:</label>
+                <input type="text" name="paid_to" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium">Plate No:</label>
+                <input type="text" name="plate_no" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium">Types of Product:</label>
+                <input type="text" name="types_of_product" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium">Can be Rented</label>
+                <div class="flex items-center">
+                                      <input type="radio" id="rentedYes" name="can_be_rented" value="Yes" class="text-blue-600 focus:ring-blue-500 h-4 w-4">
+                    <label for="rentedYes" class="ml-2 block text-gray-900">Yes</label>
+                </div>
+                <div class="flex items-center mt-2">
+                    <input type="radio" id="rentedNo" name="can_be_rented" value="No" class="text-blue-600 focus:ring-blue-500 h-4 w-4">
+                    <label for="rentedNo" class="ml-2 block text-gray-900">No</label>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium">Number of Bags:</label>
+                <input type="number" name="number_of_bags" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium">Quintal:</label>
+                <input type="number" step="0.01" name="quintal" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium">Unit Price:</label>
+                <input type="number" step="0.01" name="unit_price" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium">Total Price:</label>
+                <input type="number" step="0.01" name="total_price" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium">Advance Payment:</label>
+                <input type="number" step="0.01" name="advance_payment" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium">Remaining Payment:</label>
+                <input type="number" step="0.01" name="remaining_payment" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium">Remark:</label>
+                <textarea name="remark" rows="3" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium">Requested By Name:</label>
+                <input type="text" name="requested_by_name" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium">Requested By Date:</label>
+                <input type="date" name="requested_by_date" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium">Approved By Name:</label>
+                <input type="text" name="approved_by_name" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-700 font-medium">Approved By Date:</label>
+                <input type="date" name="approved_by_date" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
+            </div>
+
+
+            <h2 class="text-xl font-semibold mb-4">Transport Document Details</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
                 <div>
                     <label class="block text-gray-700 font-medium">Transporter Name</label>
                     <input type="text" name="transporter_name" class="w-full p-3 border border-gray-300 rounded-lg mt-1" required>
@@ -47,11 +145,11 @@
                     <input type="text" name="phone_no" class="w-full p-3 border border-gray-300 rounded-lg mt-1" required>
                 </div>
             </div>
-            <hr class="my-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>  
-                <label class="block text-gray-700 font-medium">Cash/Credit Recipt</label>
-                    <input type="file" name="credit_recipt" class="w-full p-3 border border-gray-300 rounded-lg mt-1 ">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
+                <div>
+                    <label class="block text-gray-700 font-medium">Cash/Credit Receipt</label>
+                    <input type="file" name="credit_recipt" class="w-full p-3 border border-gray-300 rounded-lg mt-1">
                 </div>
                 <div>
                     <label class="block text-gray-700 font-medium">Transport Agreement</label>
@@ -67,11 +165,11 @@
                 </div>
                 <div>
                     <label class="block text-gray-700 font-medium">Container Inspection</label>
-                    <input type="file" name="container_inspection"  class="w-full p-3 border border-gray-300 rounded-lg mt-1">
+                    <input type="file" name="container_inspection" class="w-full p-3 border border-gray-300 rounded-lg mt-1">
                 </div>
                 <div>
                     <label class="block text-gray-700 font-medium">Container Interchange</label>
-                    <input type="file" name="container_interchange" id="container_interchange" class="w-full p-3 border border-gray-300 rounded-lg mt-1">
+                    <input type="file" name="container_interchange" class="w-full p-3 border border-gray-300 rounded-lg mt-1">
                 </div>
                 <div>
                     <label class="block text-gray-700 font-medium">GRN</label>
@@ -90,43 +188,12 @@
                     <input type="file" name="delegation_document" class="w-full p-3 border border-gray-300 rounded-lg mt-1">
                 </div>
             </div>
-            <div class="flex justify-center mt-8">
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold p-3 rounded-lg w-full md:w-1/2">Submit</button>
-            </div>
+            
+
+
+            <button type="submit" class="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Submit</button>
         </form>
-
-
-
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-              const containerInterchangeField = document.getElementById('container_interchange');
-              const canBeRented = localStorage.getItem('can_be_rented');
-          
-              if (canBeRented === 'yes') {
-                containerInterchangeField.disabled = true;
-                containerInterchangeField.style.backgroundColor = '#d3d3d3';
-              }
-            });
-          </script>
-          <script>
-            // Set default appointment date to 30 days after the received date
-            const receivedDateInput = document.querySelector('input[name="received_date"]');
-            const appointmentDateInput = document.querySelector('input[name="appointment_date"]');
-    
-            receivedDateInput.addEventListener('change', function() {
-                const receivedDate = new Date(this.value);
-                const appointmentDate = new Date(receivedDate);
-                appointmentDate.setDate(appointmentDate.getDate() + 30);
-                appointmentDateInput.value = appointmentDate.toISOString().split('T')[0];
-            });
-    
-            // Initialize the appointment date based on the current received date value (if available)
-            if (receivedDateInput.value) {
-                const event = new Event('change');
-                receivedDateInput.dispatchEvent(event);
-            }
-        </script>
-
+    </div>
 </body>
-
 </html>
+

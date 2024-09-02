@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash, send_from_directory, make_response
-from flask_bcrypt import Bcrypt
-from models import db, TransportDocument, TransportClaim, User  # Import User model
+
+from models import db, TransportRecord, User  # Import User model
 from functools import wraps
 from flask_migrate import Migrate
 from werkzeug.utils import secure_filename
+from flask_bcrypt import Bcrypt
 import os
 from io import BytesIO
 from reportlab.lib.pagesizes import letter
@@ -91,7 +92,7 @@ def login():
             if user.role == 'admin':
                 return redirect(url_for('driver_list'))
             else:
-                return redirect(url_for('claim'))
+                return redirect(url_for('form'))
         else:
             flash('Invalid username, password, or role')
             return redirect(url_for('login'))
@@ -102,183 +103,113 @@ def login():
 @app.route('/driver_list')
 @role_required('admin')
 def driver_list():
-    documents = TransportDocument.query.all()
-    claims = TransportClaim.query.all()
+    documents = TransportRecord.query.all()
     
-    return render_template('transportDetails.html', documents=documents, claims=claims)
+    return render_template('transportDetails.html', documents=documents)
 
-@app.route('/claim', methods=['GET', 'POST'])
-@role_required('user')
-def claim():
+@app.route('/form', methods=['GET', 'POST'])
+def form():
     if request.method == 'POST':
-        # Debugging: Print form data
-        print("Form data:", request.form)
-        
-        # Extract data from form fields
+        # Collect form data
+        transporter_name = request.form.get('transporter_name')
+        cheque_prepared_for = request.form.get('cheque_prepared_for')
+        received_date = request.form.get('received_date')
+        appointment_date = request.form.get('appointment_date')
+        goods_transported = request.form.get('goods_transported')
+        phone_no = request.form.get('phone_no')
+
+        # Transport Claim Fields
         from_location = request.form.get('from_location')
         to_location = request.form.get('to_location')
         paid_to = request.form.get('paid_to')
         plate_no = request.form.get('plate_no')
         types_of_product = request.form.get('types_of_product')
+        can_be_rented = request.form.get('can_be_rented')
         number_of_bags = request.form.get('number_of_bags')
         quintal = request.form.get('quintal')
         unit_price = request.form.get('unit_price')
         total_price = request.form.get('total_price')
         advance_payment = request.form.get('advance_payment')
         remaining_payment = request.form.get('remaining_payment')
-        remark = request.form.get('remark')
         requested_by_name = request.form.get('requested_by_name')
-        requested_by_signature = request.form.get('requested_by_signature')
         requested_by_date = request.form.get('requested_by_date')
         approved_by_name = request.form.get('approved_by_name')
-        approved_by_signature = request.form.get('approved_by_signature')
         approved_by_date = request.form.get('approved_by_date')
-        can_be_rented = request.form.get('can_be_rented')  # Added field
-
-        # Debugging: Print extracted data
-        print("Extracted data:", {
-            'from_location': from_location,
-            'to_location': to_location,
-            'paid_to': paid_to,
-            'plate_no': plate_no,
-            'types_of_product': types_of_product,
-            'number_of_bags': number_of_bags,
-            'quintal': quintal,
-            'unit_price': unit_price,
-            'total_price': total_price,
-            'advance_payment': advance_payment,
-            'remaining_payment': remaining_payment,
-            'remark': remark,
-            'requested_by_name': requested_by_name,
-            'requested_by_signature': requested_by_signature,
-            'requested_by_date': requested_by_date,
-            'approved_by_name': approved_by_name,
-            'approved_by_signature': approved_by_signature,
-            'approved_by_date': approved_by_date,
-            'can_be_rented': can_be_rented
-        })
-
-        # Create a new TransportClaim object
-        new_claim = TransportClaim(
-            from_location=from_location,
-            to_location=to_location,
-            paid_to=paid_to,
-            plate_no=plate_no,
-            types_of_product=types_of_product,
-            number_of_bags=number_of_bags,
-            quintal=quintal,
-            unit_price=unit_price,
-            total_price=total_price,
-            advance_payment=advance_payment,
-            remaining_payment=remaining_payment,
-            remark=remark,
-            requested_by_name=requested_by_name,
-            requested_by_signature=requested_by_signature,
-            requested_by_date=requested_by_date,
-            approved_by_name=approved_by_name,
-            approved_by_signature=approved_by_signature,
-            approved_by_date=approved_by_date,
-            can_be_rented=can_be_rented  # Added field
-        )
-
-        # Add and commit the new claim to the database
-        db.session.add(new_claim)
-        db.session.commit()
-
-        # Debugging: Confirm successful commit
-        print("New claim added and committed to database.")
-
-        return redirect(url_for('form'))
-    claims = TransportClaim.query.all()
-    return render_template('transport_claim_form.html', claims=claims)
-
-
-# Route for transporter form
-@app.route("/form", methods=["GET", "POST"])
-@role_required('user')  # Only accessible by User
-def form():
-    if request.method == "POST":
-        transporter_name = request.form["transporter_name"]
-        cheque_prepared_for = request.form["cheque_prepared_for"]
-        received_date = request.form["received_date"]
-        appointment_date = request.form["appointment_date"]
-        goods_transported = request.form["goods_transported"]
-        phone_no = request.form["phone_no"]
-
-        # Define required documents
-        required_documents = [
-            'credit_recipt', 
-            'transport_agreement', 
-            'way_bill', 
-            'weight_scale', 
-            'container_inspection', 
-            'grn', 
-            'libre', 
-            'id_card', 
-            'delegation_document'
-        ]
-        
-        # Track if all required documents are uploaded
-        all_required_documents_uploaded = True
+        remark = request.form.get('remark')
         
         # Handle file uploads
-        uploaded_files = {}
-        for doc in required_documents:
-            if doc in request.files:
-                uploaded_files[doc] = save_file(request.files[doc], prefix=transporter_name)
-                if not uploaded_files[doc]:  # Check if file was saved successfully
-                    all_required_documents_uploaded = False
-            else:
-                # Mark as not uploaded if it's a required document
-                all_required_documents_uploaded = False
-
-        if not all_required_documents_uploaded:
-            flash("Please upload all required documents.")
-            return redirect(url_for('form'))
-
-        # Create a new TransportDocument object with uploaded files
-        new_document = TransportDocument(
+        uploaded_files = {
+            'credit_recipt': request.files.get('credit_recipt'),
+            'transport_agreement': request.files.get('transport_agreement'),
+            'way_bill': request.files.get('way_bill'),
+            'weight_scale': request.files.get('weight_scale'),
+            'container_inspection': request.files.get('container_inspection'),
+            'container_interchange': request.files.get('container_interchange'),
+            'grn': request.files.get('grn'),
+            'libre': request.files.get('libre'),
+            'id_card': request.files.get('id_card'),
+            'delegation_document': request.files.get('delegation_document'),
+        }
+        
+        # Save files
+        saved_files = {}
+        for key, file in uploaded_files.items():
+            if file and file.filename:
+                filename = save_file(file, prefix=key)
+                saved_files[key] = filename
+        
+        # Create a new transport document record 
+        new_document = TransportRecord(
             transporter_name=transporter_name,
             cheque_prepared_for=cheque_prepared_for,
             received_date=received_date,
             appointment_date=appointment_date,
             goods_transported=goods_transported,
             phone_no=phone_no,
-            credit_recipt=uploaded_files.get('credit_recipt'),
-            transport_agreement=uploaded_files.get('transport_agreement'),
-            way_bill=uploaded_files.get('way_bill'),
-            weight_scale=uploaded_files.get('weight_scale'),
-            container_inspection=uploaded_files.get('container_inspection'),
-            container_interchange=uploaded_files.get('container_interchange'),
-            grn=uploaded_files.get('grn'),
-            libre=uploaded_files.get('libre'),
-            id_card=uploaded_files.get('id_card'),
-            delegation_document=uploaded_files.get('delegation_document')
+            from_location=from_location,
+            to_location=to_location,
+            paid_to=paid_to,
+            plate_no=plate_no,
+            types_of_product=types_of_product,
+            can_be_rented=can_be_rented,
+            number_of_bags=int(number_of_bags),
+            quintal=float(quintal),
+            unit_price=float(unit_price) if unit_price else None,
+            total_price=float(total_price) if total_price else None,
+            advance_payment=float(advance_payment) if advance_payment else None,
+            remaining_payment=float(remaining_payment) if remaining_payment else None,
+            remark=remark,
+            requested_by_name=requested_by_name,
+            requested_by_date=requested_by_date,
+            approved_by_name=approved_by_name,
+            approved_by_date=approved_by_date,
+            **saved_files
         )
-
+        
         # Add and commit the new document to the database
-        db.session.add(new_document)
-        db.session.commit()
+        try:
+            db.session.add(new_document)
+            db.session.commit()
+            flash('Document submitted successfully!')
+            # Redirect to the confirmation page with the document_id
+            return redirect(url_for('confirmation', document_id=new_document.id))
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error: {str(e)}')
 
-        flash("All documents uploaded successfully!")
-        return redirect(url_for('confirmation', document_id=new_document.id))
-
-
-
-    return render_template("form.html")
-
+    return render_template('form.html')
 
 # Route for confirmation page
 @app.route("/confirmation/<int:document_id>")
-@role_required('user')  # Only accessible by Admin
+@role_required('user')  # Only accessible by users with the 'user' role
 def confirmation(document_id):
-    document = TransportDocument.query.get_or_404(document_id)
+    document = TransportRecord.query.get_or_404(document_id)
     return render_template("confirmation.html", document=document)
 
 # Route to download PDF
 @app.route("/download_pdf/<int:document_id>")
 def download_pdf(document_id):
-    document = TransportDocument.query.get_or_404(document_id)
+    document = TransportRecord.query.get_or_404(document_id)
     pdf, pdf_name = generate_pdf(document)
 
     response = make_response(pdf.read())
