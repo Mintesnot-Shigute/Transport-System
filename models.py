@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -49,15 +50,19 @@ class TransportRecord(db.Model):
     remark = db.Column(db.String(200), nullable=True)
     requested_by_name = db.Column(db.String(100), nullable=False)
     requested_by_date = db.Column(db.String(50), nullable=False)
-    approved_by_name = db.Column(db.String(100), nullable=False)
-    approved_by_date = db.Column(db.String(50), nullable=False)
     can_be_rented = db.Column(db.String(3), nullable=True)  # Values will be "Yes" or "No"
 
     # Fields from Approval
-    manager_name = db.Column(db.String(100), nullable=True)
-    approved = db.Column(db.Boolean, default=True)
-    approval_date = db.Column(db.DateTime)
-
+    # Fields from Approval
+    approver_name = db.Column(db.String(100), nullable=True)
+    approved = db.Column(db.Boolean, default=False)  # Default to False
+    approval_date = db.Column(db.String, nullable=True)
+    status = db.Column(db.String(50), default='Waiting for Approval')  # New field
+    def set_approval_status(self, approved: bool):
+        self.approved = approved
+        self.approval_date = datetime.now().date().strftime("%Y-%m-%d") if approved else None  # Store as a string in "YYYY-MM-DD" format
+        self.status = 'Approved' if approved else 'Waiting for Approval'
+        db.session.commit()
 # Define the User model
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)

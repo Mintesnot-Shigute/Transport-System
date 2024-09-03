@@ -51,7 +51,7 @@
             </div>
 
             <div class="mb-4">
-                <label class="block text-gray-700 font-medium">Can be Rented</label>
+                <label class="block text-gray-700 font-medium">Is Container Rental:</label>
                 <div class="flex items-center">
                                       <input type="radio" id="rentedYes" name="can_be_rented" value="Yes" class="text-blue-600 focus:ring-blue-500 h-4 w-4">
                     <label for="rentedYes" class="ml-2 block text-gray-900">Yes</label>
@@ -106,17 +106,6 @@
                 <label class="block text-gray-700 font-medium">Requested By Date:</label>
                 <input type="date" name="requested_by_date" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
             </div>
-
-            <div class="mb-4">
-                <label class="block text-gray-700 font-medium">Approved By Name:</label>
-                <input type="text" name="approved_by_name" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
-            </div>
-
-            <div class="mb-4">
-                <label class="block text-gray-700 font-medium">Approved By Date:</label>
-                <input type="date" name="approved_by_date" class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" required>
-            </div>
-
 
             <h2 class="text-xl font-semibold mb-4">Transport Document Details</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-4">
@@ -194,6 +183,77 @@
             <button type="submit" class="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Submit</button>
         </form>
     </div>
+    <script>
+        // Set default appointment date to 30 days after the received date
+        const receivedDateInput = document.querySelector('input[name="received_date"]');
+        const appointmentDateInput = document.querySelector('input[name="appointment_date"]');
+    
+        receivedDateInput.addEventListener('change', function() {
+            const receivedDate = new Date(this.value);
+            const appointmentDate = new Date(receivedDate);
+            appointmentDate.setDate(appointmentDate.getDate() + 30);
+            appointmentDateInput.value = appointmentDate.toISOString().split('T')[0];
+        });
+    
+        // Initialize the appointment date based on the current received date value (if available)
+        if (receivedDateInput.value) {
+            const event = new Event('change');
+            receivedDateInput.dispatchEvent(event);
+        }
+    
+       // Get the necessary elements
+    const rentedYesRadio = document.getElementById('rentedYes');
+    const rentedNoRadio = document.getElementById('rentedNo');
+    const containerInterchangeInput = document.querySelector('input[name="container_interchange"]');
+    
+    // Function to update the required status and color
+    function updateContainerInterchange() {
+        if (rentedNoRadio.checked) {
+            containerInterchangeInput.required = true;
+            containerInterchangeInput.disabled = false;
+            containerInterchangeInput.classList.remove('bg-gray-300');
+            containerInterchangeInput.classList.add('bg-white');
+        } else if (rentedYesRadio.checked) {
+            containerInterchangeInput.required = false;
+            containerInterchangeInput.disabled = true;
+            containerInterchangeInput.classList.remove('bg-white');
+            containerInterchangeInput.classList.add('bg-gray-300');
+            containerInterchangeInput.value = ''; // Clear any selected file
+        }
+    }
+
+    // Add event listeners to the radio buttons
+    rentedYesRadio.addEventListener('change', updateContainerInterchange);
+    rentedNoRadio.addEventListener('change', updateContainerInterchange);
+
+    // Initialize the state on page load
+    updateContainerInterchange();
+    </script>
+<script>
+    // Function to handle the enabled/disabled state of the delegation document input
+    function toggleDelegationDocument() {
+        const paidToInput = document.querySelector('input[name="paid_to"]');
+        const transporterInput = document.querySelector('input[name="transporter_name"]');
+        const delegationDocInput = document.querySelector('input[name="delegation_document"]');
+
+        // Check if the names are different
+        if (paidToInput.value !== transporterInput.value) {
+            delegationDocInput.disabled = false;
+            delegationDocInput.style.backgroundColor = ''; // Reset to default
+        } else {
+            delegationDocInput.disabled = true;
+            delegationDocInput.style.backgroundColor = '#e5e7eb'; // Set to grey
+        }
+    }
+
+    // Attach event listeners to the input fields
+    document.querySelector('input[name="paid_to"]').addEventListener('input', toggleDelegationDocument);
+    document.querySelector('input[name="transporter_name"]').addEventListener('input', toggleDelegationDocument);
+
+    // Initialize the delegation document input state based on the current values (if available)
+    toggleDelegationDocument();
+</script>
+
 </body>
 </html>
 

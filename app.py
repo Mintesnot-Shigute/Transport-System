@@ -9,6 +9,7 @@ import os
 from io import BytesIO
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
+from datetime import datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///transport.db'
@@ -133,8 +134,6 @@ def form():
         remaining_payment = request.form.get('remaining_payment')
         requested_by_name = request.form.get('requested_by_name')
         requested_by_date = request.form.get('requested_by_date')
-        approved_by_name = request.form.get('approved_by_name')
-        approved_by_date = request.form.get('approved_by_date')
         remark = request.form.get('remark')
         
         # Handle file uploads
@@ -181,8 +180,6 @@ def form():
             remark=remark,
             requested_by_name=requested_by_name,
             requested_by_date=requested_by_date,
-            approved_by_name=approved_by_name,
-            approved_by_date=approved_by_date,
             **saved_files
         )
         
@@ -200,11 +197,20 @@ def form():
     return render_template('form.html')
 
 # Route for confirmation page
-@app.route("/confirmation/<int:document_id>")
+@app.route("/confirmation")
 @role_required('user')  # Only accessible by users with the 'user' role
-def confirmation(document_id):
-    document = TransportRecord.query.get_or_404(document_id)
-    return render_template("confirmation.html", document=document)
+def confirmation():
+     documents = TransportRecord.query.all()
+     return render_template("confirmation.html", documents=documents)
+
+@app.route('/approve/<int:record_id>', methods=['POST'])
+def approve_record(record_id):
+    record = TransportRecord.query.get_or_404(record_id)
+    if record:
+        record.set_approval_status(True)  # Set as approved
+        record.approver_name = session.get('username', 'Unknown')  # Assuming username is stored in session
+        db.session.commit()
+    return redirect(url_for('driver_list'))
 
 # Route to download PDF
 @app.route("/download_pdf/<int:document_id>")

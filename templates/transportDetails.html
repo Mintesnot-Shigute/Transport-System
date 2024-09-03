@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transporter List</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-
 <body class="bg-gray-100 text-gray-900">
     <div class="max-w-7xl mx-auto p-6 bg-white shadow-md rounded-lg mt-10">
         <h1 class="text-3xl font-bold text-center mb-6">Transporter List</h1>
@@ -30,36 +28,85 @@
                     <td class="py-3 px-4">{{ document.received_date }}</td>
                     <td class="py-3 px-4">{{ document.appointment_date }}</td>
                     <td class="py-3 px-4">
-                        {% if document.status == 'Paid' %}
-                        <span class="bg-green-100 text-green-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">Paid</span>
-                        {% elif document.status == 'Draft' %}
-                        <span class="bg-gray-100 text-gray-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">Draft</span>
-                        {% elif document.status == 'In Payment' %}
-                        <span class="bg-yellow-100 text-yellow-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">In Payment</span>
+                        {% if document.status == 'Approved' %}
+                        <span class="bg-green-100 text-green-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">Approved</span>
+                        {% elif document.status == 'Waiting for Approval' %}
+                        <span class="bg-yellow-100 text-yellow-800 text-sm font-medium mr-2 px-2.5 py-0.5 rounded">Waiting for Approval</span>
                         {% endif %}
                     </td>
                     <td class="py-3 px-4">
-                        <button class="bg-blue-500 text-white font-medium py-1 px-2 rounded-md shadow hover:bg-blue-600"
-                            onclick="toggleDetails('details{{ loop.index }}')">Show More</button>
+                        <div class="flex space-x-2">
+                            <button class="bg-blue-500 text-white font-medium py-1 px-2 rounded-md shadow hover:bg-blue-600"
+                                onclick="toggleDetails('details{{ loop.index }}')">Show More</button>
+                            {% if document.status == 'Waiting for Approval' %}
+                            <form action="{{ url_for('approve_record', record_id=document.id) }}" method="post">
+                                <button type="submit" class="bg-green-500 text-white font-medium py-1 px-2 rounded-md shadow hover:bg-green-600">
+                                    Approve
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
                     </td>
                 </tr>
 
                 <tr id="details{{ loop.index }}" class="border-t border-gray-300 hidden">
                     <td colspan="6" class="py-3 px-4">
-                        {% set claims_found = False %}
-                        <div class="bg-gray-100 p-4 rounded-md">
-                            {% for claim in claims %}
-                                {% if claim.document_id == document.id %}
-                                    {% set claims_found = True %}
-                                    <p><strong>Number of bags:</strong> {{ claim.number_of_bags or 'N/A' }}</p>
-                                    <p><strong>Total Price:</strong> {{ claim.total_price }}</p>
-                                    <p><strong>Advance Payment:</strong> {{ claim.advance_payment }}</p>
-                                    <p><strong>Remaining Payment:</strong> {{ claim.remaining_payment }}</p>
-                                {% endif %}
-                            {% endfor %}
-                            {% if not claims_found %}
-                                <p>No associated claim found.</p>
-                            {% endif %}
+                        <div class="bg-white p-6 rounded-lg shadow-lg border border-gray-300">
+                            <div class="bg-gray-50 p-8 rounded-lg shadow-lg border border-gray-300">
+                                <h3 class="text-2xl font-semibold mb-16 text-center text-gray-800 bg-blue-100 px-4 py-2 rounded-md shadow-lg">Transport Document Details</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div>
+                                    <p class="font-medium text-gray-700"><strong>From Location:</strong> {{ document.from_location }}</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-700"><strong>To Location:</strong> {{ document.to_location }}</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-700"><strong>Paid To:</strong> {{ document.paid_to }}</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-700"><strong>Plate No:</strong> {{ document.plate_no }}</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-700"><strong>Types of Product:</strong> {{ document.types_of_product }}</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-700"><strong>Number of Bags:</strong> {{ document.number_of_bags }}</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-700"><strong>Quintal:</strong> {{ document.quintal }}</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-700"><strong>Unit Price:</strong> {{ document.unit_price }}</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-700"><strong>Total Price:</strong> {{ document.total_price }}</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-700"><strong>Advance Payment:</strong> {{ document.advance_payment }}</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-700"><strong>Remaining Payment:</strong> {{ document.remaining_payment }}</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-700"><strong>Remark:</strong> {{ document.remark or 'N/A' }}</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-700"><strong>Requested By Name:</strong> {{ document.requested_by_name }}</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-700"><strong>Requested By Date:</strong> {{ document.requested_by_date }}</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-700"><strong>Approved By Name:</strong> {{ document.approver_name }}</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-700"><strong>Approved By Date:</strong> {{ document.approval_date }}</p>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-700"><strong>Can Be Rented:</strong> {{ document.can_be_rented or 'N/A' }}</p>
+                                </div>
+                            </div>
                         </div>
                     </td>
                 </tr>
@@ -79,5 +126,4 @@
         }
     </script>
 </body>
-
 </html>
