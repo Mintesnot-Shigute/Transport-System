@@ -18,6 +18,7 @@ class TransportRecord(db.Model):
     
     # Fields from TransportDocument
     id = db.Column(db.Integer, primary_key=True)
+    reference = db.Column(db.String(20), unique=True, nullable=False)  # Add reference field
     transporter_name = db.Column(db.String(100), nullable=False)
     cheque_prepared_for = db.Column(db.String(100), nullable=False)
     received_date = db.Column(db.String(100), nullable=False)
@@ -63,6 +64,17 @@ class TransportRecord(db.Model):
         self.approval_date = datetime.now().date().strftime("%Y-%m-%d") if approved else None  # Store as a string in "YYYY-MM-DD" format
         self.status = 'Approved' if approved else 'Waiting for Approval'
         db.session.commit()
+
+    def generate_reference(self):
+        last_record = TransportRecord.query.order_by(TransportRecord.id.desc()).first()
+        if last_record:
+            last_ref_num = int(last_record.reference[2:])  # Extract the numeric part of the last reference
+            new_ref_num = last_ref_num + 1
+        else:
+            new_ref_num = 1
+        
+        self.reference = f"TN{new_ref_num:04d}"
+        
 # Define the User model
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)

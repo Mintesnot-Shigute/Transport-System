@@ -9,7 +9,10 @@ import os
 from io import BytesIO
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-from datetime import datetime
+from datetime import datetime, timedelta
+from flask import request, render_template
+from sqlalchemy import and_
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///transport.db'
@@ -93,7 +96,7 @@ def login():
             if user.role == 'admin':
                 return redirect(url_for('driver_list'))
             else:
-                return redirect(url_for('form'))
+                return redirect(url_for('userDashboard'))
         else:
             flash('Invalid username, password, or role')
             return redirect(url_for('login'))
@@ -101,12 +104,50 @@ def login():
     return render_template('login.html')
 
 # Route to display transporter details
-@app.route('/driver_list')
+@app.route('/driver_list', methods=['GET'])
 @role_required('admin')
 def driver_list():
-    documents = TransportRecord.query.all()
-    
+    # Get filter parameters from the query string
+    status_filter = request.args.get('status')
+    date_filter = request.args.get('date_filter')
+    reference_filter = request.args.get('reference')  # New filter for reference number
+    action = request.args.get('action')  # Action to determine which button was pressed
+
+    # Start with the base query
+    query = TransportRecord.query
+
+    # Apply filters based on the button pressed
+    if action == 'filter':
+        # Apply status filter if provided
+        if status_filter in ['Approved', 'Waiting for Approval']:
+            query = query.filter(TransportRecord.status == status_filter)
+
+        # Apply date filter if provided
+        if date_filter == 'upcoming':
+            today = datetime.today().date()
+            future_date = today + timedelta(days=10)
+            query = query.filter(and_(TransportRecord.appointment_date >= today,
+                                      TransportRecord.appointment_date <= future_date))
+        elif date_filter == 'past':
+            today = datetime.today().date()
+            query = query.filter(TransportRecord.appointment_date < today)
+
+    elif action == 'search':
+        # Apply reference number filter if provided
+        if reference_filter:
+            query = query.filter(TransportRecord.reference.like(f'%{reference_filter}%'))
+
+    # Fetch the filtered records
+    documents = query.all()
+
+    # Render the template with the filtered documents
     return render_template('transportDetails.html', documents=documents)
+
+@app.route('/userDashboard')
+@role_required('user')
+def userDashboard():
+    return render_template('userDashboard.html')
+
 
 @app.route('/form', methods=['GET', 'POST'])
 def form():
@@ -135,7 +176,7 @@ def form():
         requested_by_name = request.form.get('requested_by_name')
         requested_by_date = request.form.get('requested_by_date')
         remark = request.form.get('remark')
-        
+
         # Handle file uploads
         uploaded_files = {
             'credit_recipt': request.files.get('credit_recipt'),
@@ -157,7 +198,7 @@ def form():
                 filename = save_file(file, prefix=key)
                 saved_files[key] = filename
         
-        # Create a new transport document record 
+        # Create a new transport document record
         new_document = TransportRecord(
             transporter_name=transporter_name,
             cheque_prepared_for=cheque_prepared_for,
@@ -183,11 +224,12 @@ def form():
             **saved_files
         )
         
-        # Add and commit the new document to the database
+        # Generate the reference number
+        new_document.generate_reference()
+        
         try:
             db.session.add(new_document)
             db.session.commit()
-            flash('Document submitted successfully!')
             # Redirect to the confirmation page with the document_id
             return redirect(url_for('confirmation', document_id=new_document.id))
         except Exception as e:
@@ -200,9 +242,41 @@ def form():
 @app.route("/confirmation")
 @role_required('user')  # Only accessible by users with the 'user' role
 def confirmation():
-     documents = TransportRecord.query.all()
-     return render_template("confirmation.html", documents=documents)
+    # Get filter parameters from the query string
+    status_filter = request.args.get('status')
+    date_filter = request.args.get('date_filter')
+    reference_filter = request.args.get('reference')  # New filter for reference number
+    action = request.args.get('action')  # Action to determine which button was pressed
 
+    # Start with the base query
+    query = TransportRecord.query
+
+    # Apply filters based on the button pressed
+    if action == 'filter':
+        # Apply status filter if provided
+        if status_filter in ['Approved', 'Waiting for Approval']:
+            query = query.filter(TransportRecord.status == status_filter)
+
+        # Apply date filter if provided
+        if date_filter == 'upcoming':
+            today = datetime.today().date()
+            future_date = today + timedelta(days=10)
+            query = query.filter(and_(TransportRecord.appointment_date >= today,
+                                      TransportRecord.appointment_date <= future_date))
+        elif date_filter == 'past':
+            today = datetime.today().date()
+            query = query.filter(TransportRecord.appointment_date < today)
+
+    elif action == 'search':
+        # Apply reference number filter if provided
+        if reference_filter:
+            query = query.filter(TransportRecord.reference.like(f'%{reference_filter}%'))
+
+    # Fetch the filtered records
+    documents = query.all()
+
+    # Render the template with the filtered documents
+    return render_template('confirmation.html', documents=documents)
 @app.route('/approve/<int:record_id>', methods=['POST'])
 def approve_record(record_id):
     record = TransportRecord.query.get_or_404(record_id)
