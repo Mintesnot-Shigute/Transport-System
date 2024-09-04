@@ -12,6 +12,7 @@ from reportlab.pdfgen import canvas
 from datetime import datetime, timedelta
 from flask import request, render_template
 from sqlalchemy import and_
+from sqlalchemy.exc import IntegrityError
 
 
 app = Flask(__name__)
