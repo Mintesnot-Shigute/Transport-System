@@ -95,6 +95,8 @@ def login():
             print(f"Session data: {session}")  # Debugging line
             if user.role == 'admin':
                 return redirect(url_for('driver_list'))
+            if user.role == 'superadmin':
+                return redirect(url_for('admin_dashboard'))
             else:
                 return redirect(url_for('userDashboard'))
         else:
@@ -277,6 +279,60 @@ def confirmation():
 
     # Render the template with the filtered documents
     return render_template('confirmation.html', documents=documents)
+
+
+@app.route('/admin_dashboard', methods=['GET', 'POST'])
+@role_required('superadmin')
+def admin_dashboard():
+    users = User.query.all()
+
+    if request.method == 'POST':
+        action = request.form.get('action')
+
+        if action == 'create':
+            username = request.form['username']
+            password = request.form['password']
+            role = request.form['role']
+            new_user = User(username=username, password=password, role=role)
+            
+            try:
+                db.session.add(new_user)
+                db.session.commit()
+                flash('User created successfully!', 'success')
+            except IntegrityError:
+                db.session.rollback()
+                flash('Error: User could not be created.', 'danger')
+            
+        elif action == 'update':
+            user_id = request.form['user_id']
+            user = User.query.get_or_404(user_id)
+            user.username = request.form['username']
+            user.password = request.form['password']
+            user.role = request.form['role']
+
+            try:
+                db.session.commit()
+                flash('User updated successfully!', 'success')
+            except IntegrityError:
+                db.session.rollback()
+                flash('Error: User could not be updated.', 'danger')
+        
+        elif action == 'delete':
+            user_id = request.form['user_id']
+            user = User.query.get_or_404(user_id)
+            try:
+                db.session.delete(user)
+                db.session.commit()
+                flash('User deleted successfully!', 'success')
+            except IntegrityError:
+                db.session.rollback()
+                flash('Error: User could not be deleted.', 'danger')
+
+        return redirect(url_for('admin_dashboard'))
+    
+    return render_template('admin_dashboard.html', users=users)
+
+
 @app.route('/approve/<int:record_id>', methods=['POST'])
 def approve_record(record_id):
     record = TransportRecord.query.get_or_404(record_id)

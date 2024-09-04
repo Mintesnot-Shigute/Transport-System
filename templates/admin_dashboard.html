@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto py-12">
+        <button 
+                class="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all duration-300"
+                onclick="window.location.href='/logout'">
+                Logout
+            </button>
+        <h1 class="text-3xl font-bold text-center mb-8">Administrator Dashboard</h1>    
+
+        <!-- Create User Form -->
+        <h2 class="text-xl font-bold mb-4">Create User</h2>
+        <form action="{{ url_for('admin_dashboard') }}" method="POST" class="bg-white shadow-md rounded-lg p-6 mb-8">
+            <input type="hidden" name="action" value="create">
+            <div class="mb-4">
+                <label for="username" class="block text-gray-700">Username:</label>
+                <input type="text" name="username" id="username" class="w-full px-4 py-2 rounded-md border" required>
+            </div>
+            <div class="mb-4">
+                <label for="password" class="block text-gray-700">Password:</label>
+                <input type="password" name="password" id="password" class="w-full px-4 py-2 rounded-md border" required>
+            </div>
+            <div class="mb-4">
+                <label for="role" class="block text-gray-700">Role:</label>
+                <select name="role" id="role" class="w-full px-4 py-2 rounded-md border" required>
+                    <option value="user">User</option>
+                    <option value="user">Approver</option>
+                    <option value="admin">Administrator</option>
+                </select>
+            </div>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-md">Create User</button>
+        </form>
+
+        <!-- Users List with Update and Delete Actions -->
+        <h2 class="text-xl font-bold mb-4">Users List</h2>
+        <table class="min-w-full bg-white shadow-md rounded-lg">
+            <thead>
+                <tr>
+                    <th class="py-2 px-4 border-b">Username</th>
+                    <th class="py-2 px-4 border-b">Role</th>
+                    <th class="py-2 px-4 border-b">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td class="py-2 px-4 border-b">{{ user.username }}</td>
+                    <td class="py-2 px-4 border-b">{{ user.role }}</td>
+                    <td class="py-2 px-4 border-b">
+                        <!-- Update Form (Hidden by default) -->
+                        <form action="{{ url_for('admin_dashboard') }}" method="POST" class="inline-block">
+                            <input type="hidden" name="action" value="update">
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <div class="hidden update-form">
+                                <input type="text" name="username" value="{{ user.username }}" class="border rounded-md px-2 py-1 mb-2">
+                                <input type="password" name="password" placeholder="New Password" class="border rounded-md px-2 py-1 mb-2">
+                                <select name="role" class="border rounded-md px-2 py-1 mb-2">
+                                    <option value="user" {% if user.role == 'user' %}selected{% endif %}>User</option>
+                                    <option value="admin" {% if user.role == 'admin' %}selected{% endif %}>Admin</option>
+                                </select>
+                                <button type="submit" class="bg-green-500 text-white px-2 py-1 rounded-md">Update</button>
+                            </div>
+                        </form>
+                        <button onclick="toggleUpdateForm(this)" class="text-blue-500">Edit</button>
+
+                        <!-- Delete Form -->
+                        <form action="{{ url_for('admin_dashboard') }}" method="POST" class="inline-block">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="user_id" value="{{ user.id }}">
+                            <button type="submit" class="text-red-500 ml-2">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        function toggleUpdateForm(button) {
+            const updateForm = button.previousElementSibling.querySelector('.update-form');
+            updateForm.classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>

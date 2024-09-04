@@ -13,6 +13,8 @@ def create_default_users():
             # Create regular users
             user1 = User(username='Getachew Gebre', password='1234', role='user')
             user2 = User(username='user', password='1234', role='user')
+            superAdmin = User(username='super', password='1234', role='superadmin')
+            
 
             # Add users to the session
             db.session.add(admin1)
@@ -20,6 +22,8 @@ def create_default_users():
             db.session.add(admin3)
             db.session.add(user1)
             db.session.add(user2)
+            db.session.add(superAdmin)
+            
 
             # Commit the transaction
             db.session.commit()
